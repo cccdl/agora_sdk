@@ -17,9 +17,9 @@ class ClientTest extends TestCase
     public function test()
     {
         //频道名称
-        $channelName = "7d72365eb983485397e3e3f9d460bdda";
+        $channelName = "anzhuo";
         //用户id
-        $uid = 2882341273;
+        $uid = 8;
         //过期时间秒数
         $expireTime = 7200;
         $config = TestAccount::getTestAccount();
