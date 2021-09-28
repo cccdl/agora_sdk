@@ -18,9 +18,10 @@ class ClientTest extends TestCase
     {
         $config = TestAccount::getTestAccount();
         $RtcTokenBuilder = new RtcTokenBuilder($config);
-        $token = $RtcTokenBuilder->buildTokenWithUid('moyou2', 8, 7200);
+        $token = $RtcTokenBuilder->buildTokenWithUid('moyou2', 43, 7200);
         $this->assertIsString($token);
         echo 'Token with int uid: ' . $token . PHP_EOL;
+
     }
 
 

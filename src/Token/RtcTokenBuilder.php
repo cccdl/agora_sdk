@@ -28,18 +28,18 @@ class RtcTokenBuilder
     private $uid;
 
 
-    private array $actionPrivilege = [];
+    private $actionPrivilege = [];
 
     /**
      * @var int
      */
-    private int $salt;
+    private $salt;
 
     /**
      * expiration time
      * @var int
      */
-    private int $expireTime;
+    private $expireTime;
 
     /**
      * channel name
@@ -136,7 +136,7 @@ class RtcTokenBuilder
     {
         $buffer = unpack("C*", pack("V", $this->salt));
         $buffer = array_merge($buffer, unpack("C*", pack("V", $this->expireTime)));
-        $buffer = array_merge($buffer, unpack("C*", pack("v", sizeof([$this->actionPrivilege]))));
+        $buffer = array_merge($buffer, unpack("C*", pack("v", sizeof($this->actionPrivilege))));
         foreach ($this->actionPrivilege as $key => $value) {
             $buffer = array_merge($buffer, unpack("C*", pack("v", $key)));
             $buffer = array_merge($buffer, unpack("C*", pack("V", $value)));
