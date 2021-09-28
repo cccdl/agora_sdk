@@ -1,0 +1,19 @@
+{
+    "name": "cccdl/agora_sdk",
+    "description": "声网RTC SDK for PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "dl",
+            "email": "568078220@qq.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "cccdl\\agora_sdk\\": "src/"
+        }
+    },
+    "require": {}
+}
