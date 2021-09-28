@@ -4,31 +4,10 @@
 namespace cccdl\agora_sdk\Token;
 
 use cccdl\agora_sdk\Exception\cccdlException;
-use DateTime;
-use DateTimeZone;
 use Exception;
 
 class RtcTokenBuilder
 {
-    /**
-     * Obsolete. RoleAttendee and RolePublisher have the same permissions
-     */
-    const ROLE_ATTENDEE = 0;
-
-    /**
-     *  A broadcaster (host) in a live-broadcast profile.
-     */
-    const ROLE_PUBLISHER = 1;
-
-    /**
-     * (Default) A audience in a live-broadcast profile.
-     */
-    const ROLE_SUBSCRIBER = 2;
-
-    /**
-     * Obsolete. RoleAdmin and RolePublisher have the same permissions.
-     */
-    const ROLE_ADMIN = 101;
 
     /**
      * The App ID issued to you by Agora. Apply for a new App ID from Agora Dashboard if it is missing from your kit. See Get an App ID.
@@ -43,39 +22,24 @@ class RtcTokenBuilder
     private $appCertificate;
 
     /**
-     * Current UTC timestamp
-     * @var int
-     */
-    private $nowTimeStamp;
-
-    /**
      * uid
      * @var string
      */
     private $uid;
 
 
-    private $privileges = [
-        "kJoinChannel" => 1,
-        "kPublishAudioStream" => 2,
-        "kPublishVideoStream" => 3,
-        "kPublishDataStream" => 4,
-        "kRtmLogin" => 1000,
-    ];
-
-
-    private $actionPrivilege = [];
+    private array $actionPrivilege = [];
 
     /**
      * @var int
      */
-    private $salt;
+    private int $salt;
 
     /**
      * expiration time
      * @var int
      */
-    private $expireTime;
+    private int $expireTime;
 
     /**
      * channel name
@@ -100,7 +64,6 @@ class RtcTokenBuilder
         $this->appid = $config['appid'];
         $this->appCertificate = $config['appCertificate'];
         $this->salt = rand(0, 100000);
-        $this->nowTimeStamp = (new DateTime("now", new DateTimeZone('UTC')))->getTimestamp();
     }
 
     /**
@@ -108,7 +71,8 @@ class RtcTokenBuilder
      */
     private function setExpireTime($expireTime)
     {
-        $this->expireTime = $expireTime ?? 0;
+        $date = new \DateTime("now", new \DateTimeZone('UTC'));
+        $this->expireTime = $date->getTimestamp() + $expireTime;
     }
 
     /**
@@ -119,15 +83,6 @@ class RtcTokenBuilder
         $this->channelName = $channelName;
     }
 
-    /**
-     * Increase permissions
-     * @param $key
-     * @param $expireTimestamp
-     */
-    private function addPrivilege($key, $expireTimestamp)
-    {
-        $this->actionPrivilege[$key] = $expireTimestamp;
-    }
 
     private function packString($value): string
     {
@@ -145,11 +100,10 @@ class RtcTokenBuilder
      *                    timestamp + 600 (seconds)./
      * @param $channelName
      * @param $uid
-     * @param $role
      * @param $expireTime
      * @return string
      */
-    public function buildTokenWithUid($channelName, $uid, $role, $expireTime): string
+    public function buildTokenWithUid($channelName, $uid, $expireTime): string
     {
         //Set user id
         $this->setUid($uid);
@@ -160,14 +114,6 @@ class RtcTokenBuilder
         //Set channel name
         $this->setChannelName($channelName);
 
-        $this->addPrivilege($this->privileges["kJoinChannel"], $expireTime);
-
-        if (in_array($role, [self::ROLE_ATTENDEE, self::ROLE_PUBLISHER, self::ROLE_ADMIN])) {
-            $this->addPrivilege($this->privileges["kPublishVideoStream"], $expireTime);
-            $this->addPrivilege($this->privileges["kPublishAudioStream"], $expireTime);
-            $this->addPrivilege($this->privileges["kPublishDataStream"], $expireTime);
-        }
-
         return $this->build();
     }
 
@@ -176,20 +122,21 @@ class RtcTokenBuilder
      * Set user id
      * @param $uid
      */
-    private function setUid($uid)
+    public function setUid($uid)
     {
         if ($uid === 0) {
-            $this->uid = "";
+            $this->uid = '';
         } else {
             $this->uid = $uid . '';
         }
     }
 
+
     public function packContent()
     {
         $buffer = unpack("C*", pack("V", $this->salt));
-        $buffer = array_merge($buffer, unpack("C*", pack("V", $this->nowTimeStamp + $this->expireTime)));
-        $buffer = array_merge($buffer, unpack("C*", pack("v", sizeof($this->actionPrivilege))));
+        $buffer = array_merge($buffer, unpack("C*", pack("V", $this->expireTime)));
+        $buffer = array_merge($buffer, unpack("C*", pack("v", sizeof([$this->actionPrivilege]))));
         foreach ($this->actionPrivilege as $key => $value) {
             $buffer = array_merge($buffer, unpack("C*", pack("v", $key)));
             $buffer = array_merge($buffer, unpack("C*", pack("V", $value)));

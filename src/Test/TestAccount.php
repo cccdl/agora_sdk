@@ -5,7 +5,7 @@ namespace cccdl\agora_sdk\Test;
 
 class TestAccount
 {
-    public static function getTestAccount()
+    public static function getTestAccount(): array
     {
         return [
 //            'appid' => '请填写您的AppId',

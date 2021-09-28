@@ -16,18 +16,11 @@ class ClientTest extends TestCase
      */
     public function test()
     {
-        //频道名称
-        $channelName = "anzhuo";
-        //用户id
-        $uid = 8;
-        //过期时间秒数
-        $expireTime = 7200;
         $config = TestAccount::getTestAccount();
         $RtcTokenBuilder = new RtcTokenBuilder($config);
-        $token = $RtcTokenBuilder->buildTokenWithUid($channelName, $uid, RtcTokenBuilder::ROLE_PUBLISHER, $expireTime);
+        $token = $RtcTokenBuilder->buildTokenWithUid('moyou2', 8, 7200);
         $this->assertIsString($token);
         echo 'Token with int uid: ' . $token . PHP_EOL;
-
     }
 
 

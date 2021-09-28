@@ -32,18 +32,8 @@ $config =  [
     'appCertificate' => '请填写您的声网证书',
 ]
 
-//频道名称
-$channelName = "test";
-
-//用户id
-$uid = 8;
-
-//过期时间秒数
-$expireTime = 7200;
-
 $RtcTokenBuilder = new RtcTokenBuilder($config);
-$token = $RtcTokenBuilder->buildTokenWithUid($channelName, $uid, RtcTokenBuilder::ROLE_PUBLISHER, $expireTime);
-echo 'Token with int uid: ' . $token . PHP_EOL;
+$token = $RtcTokenBuilder->buildTokenWithUid('test', {此处填写整形uid},  {过期时间秒数});
 ```
 
 ### 接口对应文件
